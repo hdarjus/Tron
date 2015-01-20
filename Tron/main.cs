@@ -17,9 +17,9 @@ public class Solver
     Random r = new Random();
     int[] possDirs = new int[4];
     int possDirsSize = 0;
-    const int historySize = 600;
-    int[] historyX = new int[historySize];
-    int[] historyY = new int[historySize];
+    const int Xsize = 30;
+    const int Ysize = 20;
+    int[,] history = new int[Xsize,Ysize];
     int curr = 0;
     int rots = 0;
 
@@ -29,42 +29,41 @@ public class Solver
     {
         string[] inputs;
         bool first = true;
-        for (int i = 0; i < historySize; i++) {
-            historyX[i] = -1;
-            historyY[i] = -1;
-        }
-        // game loop
-        while (true)
-        {
-            inputs = Console.ReadLine().Split(' ');
-            int N = int.Parse(inputs[0]); // total number of players (2 to 4).
-            int P = int.Parse(inputs[1]); // your player number (0 to 3).
-            for (int i = 0; i < N; i++)
-            {
-                inputs = Console.ReadLine().Split(' ');
-                int X0 = int.Parse(inputs[0]); // starting X coordinate of lightcycle (or -1)
-                int Y0 = int.Parse(inputs[1]); // starting Y coordinate of lightcycle (or -1)
-                int X1 = int.Parse(inputs[2]); // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
-                int Y1 = int.Parse(inputs[3]); // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
+        for ( int i = 0; i < Xsize; i++ )
+            for ( int j = 0; j < Ysize; j++ )
+                history[i, j] = -1;
 
-                if (i == P)
+        // game loop
+        while ( true )
+        {
+            inputs = Console.ReadLine ().Split ( ' ' );
+            int N = int.Parse ( inputs[0] ); // total number of players (2 to 4).
+            int P = int.Parse ( inputs[1] ); // your player number (0 to 3).
+            for ( int i = 0; i < N; i++ )
+            {
+                inputs = Console.ReadLine ().Split ( ' ' );
+                int X0 = int.Parse ( inputs[0] ); // starting X coordinate of lightcycle (or -1)
+                int Y0 = int.Parse ( inputs[1] ); // starting Y coordinate of lightcycle (or -1)
+                int X1 = int.Parse ( inputs[2] ); // starting X coordinate of lightcycle (can be the same as X0 if you play before this player)
+                int Y1 = int.Parse ( inputs[3] ); // starting Y coordinate of lightcycle (can be the same as Y0 if you play before this player)
+
+                if ( i == P )
                 {
-                    if (first)
+                    if ( first )
                     {
                         first = false;
                         prev = 1;
-                        step(X1, Y1);
+                        step ( X1, Y1 );
                     }
                     else
                     {
-                        step(X1, Y1);
+                        step ( X1, Y1 );
                     }
-                    Console.WriteLine(dir[prev]);
+                    Console.WriteLine ( dir[prev] );
                 }
 
-                historyX[curr] = X1;
-                historyY[curr] = Y1;
-                curr = (curr + 1) % historySize;
+                history[X1, Y1] = P;
+                curr++;
             }
 
             // Write an action using Console.WriteLine()
@@ -87,11 +86,8 @@ public class Solver
         }
         int nextX = X + (direction % 2) * (2 - direction);
         int nextY = Y + ((direction+1) % 2) * (direction - 1);
-        for (int i = 0; i < historySize; i++)
-        {
-            if (historyX[i] == nextX && historyY[i] == nextY)
-                return true;
-        }
+        if (history[nextX, nextY] >= 0)
+            return true;
         return false;
     }
 
